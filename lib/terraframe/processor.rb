@@ -16,7 +16,7 @@ module Terraframe
 
     def initialize
       @logger = Logger.new($stderr)
-      logger.level = Logger::DEBUG
+      logger.level = Logger::INFO
 
       logger.debug "Logger initialized."
 
