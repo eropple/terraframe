@@ -1,0 +1,32 @@
+#! /usr/bin/env ruby
+
+lib = File.expand_path(File.dirname(__FILE__) + '/../lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib) && !$LOAD_PATH.include?(lib)
+
+require 'trollop'
+require 'terraframe'
+
+processor = Terraframe::Processor.new
+
+opts = Trollop::options do
+  opt :input_file,    "Input file(s) to process into a Terraform script.",
+                      :short => "f", :type => :strings, :required => true
+  opt :variable_file, "Variable file (YAML or JSON, not tfvars!).",
+                      :short => "v", :type => :strings
+  opt :output_file,   "Output location for the compiled Terraform script.",
+                      :short => "o", :type => :string
+  opt :pretty_print,  "Pretty-prints the Terraform output.", :default => true
+end
+
+output = processor.process_files(opts[:input_file], opts[:variable_file] || [])
+if opts[:pretty_print]
+  output = JSON.pretty_generate(JSON.parse(output))
+end
+
+if opts[:output_file]
+  processor.logger.info "Writing output to '#{opts[:output_file]}'."
+  IO.write(opts[:output_file], output)
+else
+  processor.logger.info "Writing output to stdout."
+  puts output
+end
