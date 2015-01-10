@@ -51,7 +51,7 @@ module Terraframe
         raise msg
       end
 
-      provider = @__contexts[type].provider_type.new(&block)
+      provider = @__contexts[type].provider_type.new(vars, &block)
       logger.debug "Provider of type '#{type}': #{provider.inspect}"
       @__output[:providers][type] = provider
 
@@ -76,17 +76,22 @@ module Terraframe
       end
 
       @__output[:resources][resource_type] ||= {}
-      @__output[:resources][resource_type][resource_name.to_s] = Resource.new(&block)
+      @__output[:resources][resource_type][resource_name.to_s] = Resource.new(vars, &block)
     end
 
     # anything that is not a provider or a variable should be interpreted 
     def method_missing(method_name, *args, &block)
-      if (args.length != 1)
-        msg = "Too many arguments for resource invocation '#{method_name}'."
-        logger.fatal(msg)
-        raise msg
+      case method_name
+        when "vars"
+          @vars
+        else
+          if (args.length != 1)
+            msg = "Too many arguments for resource invocation '#{method_name}'."
+            logger.fatal(msg)
+            raise msg
+          end
+          resource(method_name.to_sym, args[0], &block)
       end
-      resource(method_name.to_sym, args[0], &block)
     end
   end
 end

@@ -3,9 +3,11 @@ require 'json'
 module Terraframe
   class ScriptItem
     attr_reader :fields
+    attr_reader :vars
 
-    def initialize(&block)
+    def initialize(vars, &block)
       @fields = {}
+      @vars = vars
 
       instance_eval &block
     end
