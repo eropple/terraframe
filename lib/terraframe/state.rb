@@ -1,4 +1,5 @@
 require 'json'
+require 'recursive_open_struct'
 
 module Terraframe
   class State
@@ -9,7 +10,7 @@ module Terraframe
       @logger = logger
       logger.info "Initializing state."
 
-      @vars = vars
+      @vars = RecursiveOpenStruct.new(vars, :recurse_over_arrays => true )
       logger.debug "State variables:"
       logger.ap vars, :debug
 
