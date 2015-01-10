@@ -36,6 +36,7 @@ The latter deserves special attention, because any attempted invocation other th
 ## Future Work ##
 Right now, Terraframe is being extended as I need it. Pull requests very gratefully accepted for
 
+- Variable interpolation in YAML variable files (or possibly Ruby variable files that must emit a hash, a la Chef). This will be soon, I'll need it.
 - Supporting `variable` and `provisioner` blocks, neither are hard but they have to get done.
 - Script linting (checking for id existence, only allowing valid keys, etc.) before starting up Terraform. Very low priority, as that's what Terraform itself does.
 - Test coverage.

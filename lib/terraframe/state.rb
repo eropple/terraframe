@@ -17,10 +17,9 @@ module Terraframe
       @__contexts = contexts
 
       @__output = {
-        :providers => {},
-        :provisioners => {},
-        :variables => {},
-        :resources => {}
+        :provider => {},
+        :variable => {},
+        :resource => {}
       }
     end
 
@@ -45,7 +44,7 @@ module Terraframe
         raise msg
       end
 
-      if @__output[:providers][type]
+      if @__output[:provider][type]
         msg = "Duplicate provider type (sorry, blame Terraform): '#{type}'"
         logger.fatal msg
         raise msg
@@ -53,7 +52,7 @@ module Terraframe
 
       provider = @__contexts[type].provider_type.new(vars, &block)
       logger.debug "Provider of type '#{type}': #{provider.inspect}"
-      @__output[:providers][type] = provider
+      @__output[:provider][type] = provider
 
       provider
     end
@@ -75,8 +74,8 @@ module Terraframe
         logger.warn "Could not find a context that supports resource type '#{resource_type}'. Continuing, but you've been warned."
       end
 
-      @__output[:resources][resource_type] ||= {}
-      @__output[:resources][resource_type][resource_name.to_s] = Resource.new(vars, &block)
+      @__output[:resource][resource_type] ||= {}
+      @__output[:resource][resource_type][resource_name.to_s] = Resource.new(vars, &block)
     end
 
     # anything that is not a provider or a variable should be interpreted 
