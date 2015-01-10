@@ -5,7 +5,7 @@ provider :aws do
   region "us-east-1"
 end
 
-(0...vars["test_vars"]["num_jimmies"]).each do |i|
+(0...vars.test_vars.num_jimmies).each do |i|
   aws_instance "jimmy-#{i}" do
     vpc_id id_of(:aws_vpc, "main-vpc")
   end
