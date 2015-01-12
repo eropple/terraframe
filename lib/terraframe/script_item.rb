@@ -1,4 +1,5 @@
 require 'json'
+require 'hashie/mash'
 
 module Terraframe
   class ScriptItem
@@ -7,7 +8,7 @@ module Terraframe
 
     def initialize(vars, &block)
       @fields = {}
-      @vars = vars
+      @vars = Hashie::Mash.new(vars)
 
       instance_eval &block
     end
@@ -19,6 +20,10 @@ module Terraframe
     ## DSL FUNCTIONS BELOW
     def method_missing(method_name, *args, &block)
       if args.length == 1
+        if args[0] == nil
+          raise "Passed nil to '#{method_name}'. Generally disallowed, subclass ScriptItem if you need this."
+        end
+
         @fields[method_name.to_sym] = args[0]
       else
         raise "Multiple fields passed to a scalar auto-argument '#{method_name}'."
