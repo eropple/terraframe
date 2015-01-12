@@ -44,7 +44,11 @@ module Terraframe
         raise "One or more specified files were missing."
       end
 
-      apply(Hash[scripts.zip(scripts.map { |f| IO.read(f) })], load_variable_files(variable_files).merge(override_variables))
+
+      script_pairs = scripts.zip(scripts.map { |f| IO.read(f) })
+      vars = load_variable_files(variable_files).deep_merge(override_variables)
+
+      apply(script_pairs.to_h, vars)
     end
 
     def load_variable_files(variable_files)
