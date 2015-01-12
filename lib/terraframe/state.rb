@@ -70,12 +70,18 @@ module Terraframe
     end
 
     def resource(resource_type, resource_name, &block)
-      unless @__contexts.any? { |k, v| v.resources.include?(resource_type) }
-        logger.warn "Could not find a context that supports resource type '#{resource_type}'. Continuing, but you've been warned."
+      handling_context_pair = @__contexts.find { |k, v| v.resources.include?(resource_type) }
+      if handling_context_pair == nil
+        msg = "Could not find a context that supports resource type '#{resource_type}'."
+        logger.error msg
+        raise msg
       end
 
+      handling_context = handling_context_pair[1]
+      resource_class = handling_context.resources[resource_type]
+
       @__output[:resource][resource_type] ||= {}
-      @__output[:resource][resource_type][resource_name.to_s] = Resource.new(vars, &block)
+      @__output[:resource][resource_type][resource_name.to_s] = resource_class.new(resource_name, vars, &block)
     end
 
     # anything that is not a provider or a variable should be interpreted 

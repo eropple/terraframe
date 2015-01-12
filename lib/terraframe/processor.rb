@@ -6,7 +6,7 @@ require 'active_support/core_ext/hash'
 require 'awesome_print'
 
 require 'terraframe/state'
-require 'terraframe/contexts/aws_context'
+require 'terraframe/aws/aws_context'
 
 module Terraframe
   class Processor
@@ -21,7 +21,7 @@ module Terraframe
       logger.debug "Logger initialized."
 
       @contexts = {}
-      register_context(:aws, Terraframe::Contexts::AWSContext.new)
+      register_context(:aws, Terraframe::AWS::AWSContext.new)
     end
 
     def register_context(name, context)
