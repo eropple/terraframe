@@ -8,6 +8,7 @@ def main()
   require 'trollop'
   require 'terraframe'
   require 'awesome_print'
+  require 'hashie/mash'
 
   opts = Trollop::options do
     opt :input_file,        "Input file(s) to process into a Terraform script.",
@@ -24,11 +25,11 @@ def main()
   if opts[:verbose]
     processor.logger.level = Logger::DEBUG
   end
-  processor.logger.debug opts.inspect
+  processor.logger.ap opts.inspect, :debug
 
   output = processor.process_files(opts[:input_file],
                                    opts[:variable_file] || [],
-                                   opts[:override_variable].map { |v| process_property(v) }.to_h )
+                                   process_properties(opts[:override_variable]))
   if opts[:pretty_print]
     output = JSON.pretty_generate(JSON.parse(output))
   end
@@ -37,12 +38,18 @@ def main()
   puts output
 end
 
-def process_property(arg)
-  tokens = arg.split("=", 2)
-  key = tokens[0]
-  value = tokens[1]
+def process_properties(props)
+  hash = props.map { |p| p.split("=", 2) }.to_h
 
-  [key, value]
+  hash_trees = hash.map do |main_key, main_value|
+    main_key.to_s.split(".").reverse.inject(main_value) do |value, key|
+      {key.to_s => value}
+    end
+  end
+
+  retval = {}
+  hash_trees.each { |h| retval.deep_merge!(h) }
+  retval
 end
 
 main()
