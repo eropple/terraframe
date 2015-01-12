@@ -32,24 +32,24 @@ module Terraframe
       @contexts[name] = context
     end
 
-    def process_files(scripts, variables)
+    def process_files(scripts, variable_files, override_variables)
       scripts = scripts.map { |f| File.expand_path(f) }
-      variables = variables.map { |f| File.expand_path(f) }
+      variable_files = variable_files.map { |f| File.expand_path(f) }
 
       missing_scripts = scripts.reject { |f| File.exist?(f) }
-      missing_variables = variables.reject { |f| File.exist?(f) }
-      unless missing_scripts.empty? && missing_variables.empty?
+      missing_variable_files = variable_files.reject { |f| File.exist?(f) }
+      unless missing_scripts.empty? && missing_variable_files.empty?
         missing_scripts.each { |f| logger.fatal "Script file not found: #{f}" }
-        missing_variables.each { |f| logger.fatal "Variable file not found: #{f}" }
+        missing_variable_files.each { |f| logger.fatal "Variable file not found: #{f}" }
         raise "One or more specified files were missing."
       end
 
-      apply(Hash[scripts.zip(scripts.map { |f| IO.read(f) })], load_variables(variables))
+      apply(Hash[scripts.zip(scripts.map { |f| IO.read(f) })], load_variable_files(variable_files).merge(override_variables))
     end
 
-    def load_variables(variables)
+    def load_variable_files(variable_files)
       vars = {}
-      variables.each { |f| vars = vars.deep_merge(YAML::load_file(f)) }
+      variable_files.each { |f| vars = vars.deep_merge(YAML::load_file(f)) }
       vars
     end
 

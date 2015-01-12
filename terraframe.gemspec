@@ -24,5 +24,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency     "trollop",                "~> 2.0"
   spec.add_runtime_dependency     "activesupport",          "~> 4.2.0"
   spec.add_runtime_dependency     "awesome_print",          "~> 1.6.1"
-  spec.add_runtime_dependency     "recursive-open-struct",  "~> 0.5.0"
+  spec.add_runtime_dependency     'hashie',                 '~> 3.3.2'
 end
