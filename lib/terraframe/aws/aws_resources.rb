@@ -15,7 +15,7 @@ module Terraframe
     end
 
     class AWSTaggedResource < Terraframe::Resource
-      def initialize(name, vars, &block)
+      def initialize(name, vars, context, &block)
         @fields = {}
         @vars = Hashie::Mash.new(vars)
 
@@ -23,10 +23,10 @@ module Terraframe
         @fields["tags"]["Name"] = name
 
         instance_eval &block
-    end
+      end
 
       def tags(&block)
-        tag_set = Terraframe::AWS::AWSTagBlock.new(@vars, &block)
+        tag_set = Terraframe::AWS::AWSTagBlock.new(@vars, @context, &block)
         @fields["tags"].merge!(tag_set.fields)
       end
 
@@ -36,6 +36,13 @@ module Terraframe
     end
 
     class AWSTagBlock < Terraframe::ScriptItem
+    end
+
+    class AWSSecurityGroupResource < AWSResource
+      def initialize(name, vars, context, &block)
+        super(name, vars, context, &block)
+        @fields["name"] = name
+      end
     end
   end
 end

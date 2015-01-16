@@ -5,16 +5,21 @@ module Terraframe
   class ScriptItem
     attr_reader :fields
     attr_reader :vars
+    attr_reader :context
 
-    def initialize(vars, &block)
+    def initialize(vars, context, &block)
       @fields = {}
+      @context = context
       @vars = Hashie::Mash.new(vars)
 
       instance_eval &block
     end
 
     def to_json(*a)
-      @fields.to_json(*a)
+      sanitized = @fields
+      sanitized.delete("\#")
+
+      sanitized.to_json(*a)
     end
 
     ## DSL FUNCTIONS BELOW
