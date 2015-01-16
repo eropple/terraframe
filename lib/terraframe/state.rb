@@ -3,6 +3,8 @@ require 'hashie/mash'
 
 module Terraframe
   class State
+    # TODO: support outputs!
+
     attr_reader :vars
     attr_reader :logger
 
@@ -50,7 +52,8 @@ module Terraframe
         raise msg
       end
 
-      provider = @__contexts[type].provider_type.new(vars, &block)
+      handling_context = @__contexts[type]
+      provider = handling_context.provider_type.new(vars, handling_context, &block)
       logger.debug "Provider of type '#{type}': #{provider.inspect}"
       @__output[:provider][type] = provider
 
@@ -59,12 +62,6 @@ module Terraframe
 
     def variable
       msg = "TODO: implement tfvar support."
-      logger.fatal msg
-      raise msg
-    end
-
-    def provisioner
-      msg = "TODO: implement provisioner support."
       logger.fatal msg
       raise msg
     end
@@ -81,7 +78,7 @@ module Terraframe
       resource_class = handling_context.resources[resource_type]
 
       @__output[:resource][resource_type] ||= {}
-      @__output[:resource][resource_type][resource_name.to_s] = resource_class.new(resource_name, vars, &block)
+      @__output[:resource][resource_type][resource_name.to_s] = resource_class.new(resource_name, vars, handling_context, &block)
     end
 
     # anything that is not a provider or a variable should be interpreted 

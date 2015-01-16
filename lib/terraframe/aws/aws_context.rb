@@ -25,7 +25,7 @@ module Terraframe
 
         :aws_instance => Terraframe::AWS::AWSTaggedResource,
         :aws_route_table => Terraframe::AWS::AWSTaggedResource,
-        :aws_security_group => Terraframe::AWS::AWSTaggedResource,
+        :aws_security_group => Terraframe::AWS::AWSSecurityGroupResource,
         :aws_subnet => Terraframe::AWS::AWSTaggedResource,
         :aws_vpc => Terraframe::AWS::AWSTaggedResource
       }
