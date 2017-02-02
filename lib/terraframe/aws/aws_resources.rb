@@ -1,6 +1,5 @@
 require 'hashie/mash'
 require 'terraframe/resource'
-require 'pry'
 
 module Terraframe
   module AWS
